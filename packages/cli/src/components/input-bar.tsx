@@ -1,16 +1,17 @@
 import { CommandMenu } from "./command-menu";
 import { StatusBar } from "./status-bar";
 import type { KeyBinding } from "@opentui/core";
-import {useRef,useCallback,useEffect} from "react";
-import type {TextareaRenderable} from "@opentui/core";
-import type {Command} from "./command-menu/types";
-import {useCommandMenu} from "./command-menu/use-command-menu";
-import {useRenderer} from "@opentui/react";
+import { useRef, useCallback, useEffect } from "react";
+import type { TextareaRenderable } from "@opentui/core";
+import type { Command } from "./command-menu/types";
+import { useCommandMenu } from "./command-menu/use-command-menu";
+import { useRenderer } from "@opentui/react";
 import { useToast } from "../providers/toast";
+import { useKeyboardLayer } from "../providers/keyboard-layer";
 
 type Props = {
-    onSubmit: (value: string) => void;
-    disabled?: boolean;
+  onSubmit: (value: string) => void;
+  disabled?: boolean;
 }
 
 export const TEXTAREA_KEY_BINDINGS: KeyBinding[] = [
@@ -21,12 +22,14 @@ export const TEXTAREA_KEY_BINDINGS: KeyBinding[] = [
 ];
 
 export function InputBar({ onSubmit, disabled = false }: Props) {
-    const textareaRef = useRef<TextareaRenderable>(null);
-    const onSubmitRef = useRef<() => void>(() => {});
-    const renderer = useRenderer();
-    const toast = useToast();
+  const textareaRef = useRef<TextareaRenderable>(null);
+  const onSubmitRef = useRef<() => void>(() => { });
+  const renderer = useRenderer();
+  const toast = useToast();
+  const { isTopLayer, setResponder } = useKeyboardLayer();
 
-    const {
+
+  const {
     showCommandMenu,
     commandQuery,
     selectedIndex,
@@ -36,7 +39,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     setSelectedIndex,
   } = useCommandMenu();
 
-    const handleTextareaContentChange = useCallback(() => {
+  const handleTextareaContentChange = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -44,22 +47,22 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
   }, []);
 
   const handleCommand = useCallback((command: Command | undefined) => {
-        const textarea = textareaRef.current;
-        if (!textarea || !command) return;
+    const textarea = textareaRef.current;
+    if (!textarea || !command) return;
 
-        textarea.setText("");
+    textarea.setText("");
 
-        if (command.action) {
-        command.action({
-            exit: () => renderer.destroy(),
-            toast,
-        });
-        } else {
-        textarea.insertText(command.value + " ");
+    if (command.action) {
+      command.action({
+        exit: () => renderer.destroy(),
+        toast,
+      });
+    } else {
+      textarea.insertText(command.value + " ");
     }
-  }, [renderer,toast]);
+  }, [renderer, toast]);
 
-    const handleCommandExecute = useCallback(
+  const handleCommandExecute = useCallback(
     (index: number) => {
       const command = resolveCommand(index);
       handleCommand(command);
@@ -68,8 +71,8 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
   );
 
 
-    // Wire up textarea submit handler once so it always reads the latest state.
-    useEffect(() => {
+  // Wire up textarea submit handler once so it always reads the latest state.
+  useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -77,78 +80,95 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
       onSubmitRef.current();
     };
   }, [])
-    
-    const handleSubmit = useCallback(() => {
-        if (disabled) return;
 
-        const textarea = textareaRef.current;
-        if (!textarea) return;
+  const handleSubmit = useCallback(() => {
+    if (disabled) return;
 
-        const text = textarea.plainText.trim();
-        if (text.length === 0) return;
+    const textarea = textareaRef.current;
+    if (!textarea) return;
 
-        onSubmit(text);
+    const text = textarea.plainText.trim();
+    if (text.length === 0) return;
+
+    onSubmit(text);
+    textarea.setText("");
+  }, [disabled, onSubmit]);
+
+
+  onSubmitRef.current = () => {
+    if (disabled) return;
+
+    if (showCommandMenu) {
+      const command = resolveCommand(selectedIndex);
+      handleCommand(command);
+      return;
+    }
+
+    handleSubmit();
+  }
+
+
+  useEffect(() => {
+    setResponder("base", () => {
+      if (disabled) return false;
+
+      const textarea = textareaRef.current;
+      if (textarea && textarea.plainText.length > 0) {
         textarea.setText("");
-    },[disabled, onSubmit]);
+        return true;
+      }
+
+      return false;
+    });
+
+    return () => setResponder("base", null);
+  }, [disabled, setResponder]);
 
 
-    onSubmitRef.current = () => {
-        if (disabled) return;
-
-        if (showCommandMenu) {
-        const command = resolveCommand(selectedIndex);
-        handleCommand(command);
-        return;
-        }
-
-        handleSubmit();
-   }
-
-
-    return (
-        <box width="100%" alignItems="center">
+  return (
+    <box width="100%" alignItems="center">
+      <box
+        border={["left"]}
+        borderColor="#A78BFA"
+        width="100%"
+      >
+        <box
+          position="relative"
+          justifyContent="center"
+          paddingX={2}
+          paddingY={1}
+          backgroundColor="#1A1A24"
+          width="100%"
+          gap={1}
+        >
+          {showCommandMenu && (
             <box
-              border={["left"]}
-              borderColor="#A78BFA"
+              position="absolute"
+              bottom="100%"
+              left={0}
               width="100%"
+              backgroundColor="#1A1A24"
+              zIndex={10}
             >
-                <box
-                    position="relative"
-                    justifyContent="center"
-                    paddingX={2}
-                    paddingY={1}
-                    backgroundColor="#1A1A24"
-                    width="100%"
-                    gap={1}
-                >
-                    {showCommandMenu && (
-                        <box
-                          position="absolute"
-                          bottom="100%"
-                          left={0}
-                          width="100%"
-                          backgroundColor="#1A1A24"
-                          zIndex={10}
-                        >
-                            <CommandMenu
-                                query={commandQuery}
-                                selectedIndex={selectedIndex}
-                                scrollRef={scrollRef}
-                                onSelect={setSelectedIndex}
-                                onExecute={handleCommandExecute}
-                             />
-                        </box>
-                    )}
-                    <textarea
-                        ref={textareaRef} 
-                        focused = {!disabled}
-                        keyBindings={TEXTAREA_KEY_BINDINGS}
-                        onContentChange={handleTextareaContentChange}
-                        placeholder={`Ask me anything`}
-                    />
-                    <StatusBar/>
-                </box>
+              <CommandMenu
+                query={commandQuery}
+                selectedIndex={selectedIndex}
+                scrollRef={scrollRef}
+                onSelect={setSelectedIndex}
+                onExecute={handleCommandExecute}
+              />
             </box>
+          )}
+          <textarea
+            ref={textareaRef}
+            focused={!disabled && (isTopLayer("base") || isTopLayer("command"))}
+            keyBindings={TEXTAREA_KEY_BINDINGS}
+            onContentChange={handleTextareaContentChange}
+            placeholder={`Ask me anything`}
+          />
+          <StatusBar />
         </box>
-    )
+      </box>
+    </box>
+  )
 }

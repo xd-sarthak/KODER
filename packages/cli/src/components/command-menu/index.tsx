@@ -3,6 +3,7 @@ import { TextAttributes, type ScrollBoxRenderable } from "@opentui/core";
 import { filterCommands } from "./filter-commands";
 import { COMMANDS } from "./commands";
 
+
 const MAX_VISIBLE_COMMANDS = 8;
 
 // gotta align all command names in a fixed width column

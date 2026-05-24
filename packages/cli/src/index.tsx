@@ -3,11 +3,13 @@ import { createRoot } from "@opentui/react";
 import { Header } from "./components/header";
 import { InputBar } from "./components/input-bar";
 import { ToastProvider } from "./providers/toast";
+import { KeyboardLayerProvider } from "./providers/keyboard-layer";
 
 // box - a basic container component, can be used for layout and styling
 // width and height can be set to "100%" to fill available space, or to a fixed number of columns/rows
 function App() {
   return (
+    <KeyboardLayerProvider>
     <ToastProvider>
     <box
       alignItems="center"
@@ -23,7 +25,9 @@ function App() {
       </box>
     </box>
     </ToastProvider>
+    </KeyboardLayerProvider>
   );
+
 }
 
 // event loop and renderer setup - this is where we create the renderer and mount our app
