@@ -4,6 +4,17 @@ import {useKeyboard} from "@opentui/react";
 import {filterCommands} from "./filter-commands";
 import type { Command } from "./types";
 
+// useState -> persistent reactive state
+//          -> value survives renders
+//          -> changing state triggers re-render
+
+// useRef -> mutable container
+//        -> should not trigger re-render when changed
+
+// useMemo -> cached derived computations
+// RefObject  -> type contract
+
+// manages the state and logic for a command menu in a text editor.
 type UseCommandMenuReturn = {
     showCommandMenu: boolean;
     commandQuery: string;
@@ -14,8 +25,9 @@ type UseCommandMenuReturn = {
     setSelectedIndex: (index: number) => void;
 }
 
+
 export function useCommandMenu() : UseCommandMenuReturn {
-  const [textValue, setTextValue] = useState("");
+  const [textValue, setTextValue] = useState(""); // the current text input value
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showCommandMenu, setShowCommandMenu] = useState(false);
   const scrollRef = useRef<ScrollBoxRenderable>(null);
