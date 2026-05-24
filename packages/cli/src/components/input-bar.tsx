@@ -6,6 +6,7 @@ import type {TextareaRenderable} from "@opentui/core";
 import type {Command} from "./command-menu/types";
 import {useCommandMenu} from "./command-menu/use-command-menu";
 import {useRenderer} from "@opentui/react";
+import { useToast } from "../providers/toast";
 
 type Props = {
     onSubmit: (value: string) => void;
@@ -23,6 +24,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     const textareaRef = useRef<TextareaRenderable>(null);
     const onSubmitRef = useRef<() => void>(() => {});
     const renderer = useRenderer();
+    const toast = useToast();
 
     const {
     showCommandMenu,
@@ -50,11 +52,12 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
         if (command.action) {
         command.action({
             exit: () => renderer.destroy(),
+            toast,
         });
         } else {
         textarea.insertText(command.value + " ");
     }
-  }, [renderer]);
+  }, [renderer,toast]);
 
     const handleCommandExecute = useCallback(
     (index: number) => {

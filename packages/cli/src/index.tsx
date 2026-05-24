@@ -2,11 +2,13 @@ import { createCliRenderer } from "@opentui/core"; // the engnine for terminal r
 import { createRoot } from "@opentui/react";
 import { Header } from "./components/header";
 import { InputBar } from "./components/input-bar";
+import { ToastProvider } from "./providers/toast";
 
 // box - a basic container component, can be used for layout and styling
 // width and height can be set to "100%" to fill available space, or to a fixed number of columns/rows
 function App() {
   return (
+    <ToastProvider>
     <box
       alignItems="center"
       justifyContent="center"
@@ -20,6 +22,7 @@ function App() {
         <InputBar onSubmit={() => {}}/>
       </box>
     </box>
+    </ToastProvider>
   );
 }
 
