@@ -11,6 +11,7 @@ import { Header } from "./components/header";
 import { InputBar } from "./components/input-bar";
 import { ToastProvider } from "./providers/toast";
 import { KeyboardLayerProvider } from "./providers/keyboard-layer";
+import { DialogProvider } from "./providers/dialogs";
 
 // box - a basic container component, can be used for layout and styling
 // width and height can be set to "100%" to fill available space, or to a fixed number of columns/rows
@@ -25,6 +26,7 @@ import { KeyboardLayerProvider } from "./providers/keyboard-layer";
 function App() {
   return (
     <KeyboardLayerProvider>
+      <DialogProvider>
     <ToastProvider>
     <box
       alignItems="center"
@@ -40,6 +42,7 @@ function App() {
       </box>
     </box>
     </ToastProvider>
+      </DialogProvider>
     </KeyboardLayerProvider>
   );
 

@@ -4,6 +4,7 @@
  * passed to their handlers (like notifications or app termination).
  */
 
+import type { DialogContextValue } from "../../providers/dialogs";
 import type { ToastContextValue } from "../../providers/toast";
 
 /**
@@ -13,6 +14,7 @@ import type { ToastContextValue } from "../../providers/toast";
 export type CommandContext = {
     exit: () => void;
     toast: ToastContextValue;
+    dialog: DialogContextValue;
 }
 
 /**

@@ -15,6 +15,7 @@ import { useCommandMenu } from "./command-menu/use-command-menu";
 import { useRenderer } from "@opentui/react";
 import { useToast } from "../providers/toast";
 import { useKeyboardLayer } from "../providers/keyboard-layer";
+import { useDialog } from "../providers/dialogs";
 
 type Props = {
   onSubmit: (value: string) => void;
@@ -45,6 +46,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
   const onSubmitRef = useRef<() => void>(() => { });
   const renderer = useRenderer();
   const toast = useToast();
+  const dialog = useDialog();
   const { isTopLayer, setResponder } = useKeyboardLayer();
 
 
@@ -83,6 +85,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
       command.action({
         exit: () => renderer.destroy(),
         toast,
+        dialog,
       });
     } else {
       textarea.insertText(command.value + " ");
