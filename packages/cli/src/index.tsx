@@ -9,31 +9,43 @@ import { InputBar } from "./components/input-bar";
 import { ToastProvider } from "./providers/toast";
 import { KeyboardLayerProvider } from "./providers/keyboard-layer";
 import { DialogProvider } from "./providers/dialogs";
+import { ThemeProvider } from "./providers/theme";
+import { useTheme } from "./providers/theme";
+
+function ThemedRoot() {
+  const { colors } = useTheme();
+
+  return (
+    <box
+      alignItems="center"
+      justifyContent="center"
+      backgroundColor={colors.background}
+      width="100%"
+      height="100%"
+      gap={2}
+    >
+      <Header />
+      <box width="100%" maxWidth={100} paddingX={2}>
+        <InputBar onSubmit={() => { }} />
+      </box>
+    </box>
+  )
+}
 
 // This is the root component — everything else lives inside it
 // Architecture: we wrap the app in providers (keyboard, dialog, toast) so any child component
 // can trigger notifications, dialogs, or handle keyboard focus without prop drilling
 function App() {
   return (
-    <KeyboardLayerProvider>
-      <DialogProvider>
-    <ToastProvider>
-    <box
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="#0D0D12"
-      width="100%"
-      height="100%"
-      gap={2}
-    >
-      <Header/>
-      <box width="100%" maxWidth={100} paddingX = {2}>
-        <InputBar onSubmit={() => {}}/>
-      </box>
-    </box>
-    </ToastProvider>
-      </DialogProvider>
-    </KeyboardLayerProvider>
+    <ThemeProvider>
+      <KeyboardLayerProvider>
+        <DialogProvider>
+          <ToastProvider>
+            <ThemedRoot />
+          </ToastProvider>
+        </DialogProvider>
+      </KeyboardLayerProvider>
+    </ThemeProvider>
   );
 
 }

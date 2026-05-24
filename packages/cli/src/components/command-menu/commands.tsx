@@ -3,7 +3,7 @@
 // Each command has a name, description, and an action that runs when you pick it
 // The action gets access to toast notifications, dialogs, and the exit function
 
-import { ThemeDialogContent } from "../dialogs";
+import { ThemeDialogContent } from "../dialogs"
 import type { Command } from "./types";
 
 // The full list of commands — add new ones here and they'll automatically

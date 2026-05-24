@@ -8,7 +8,7 @@ import { TextAttributes, RGBA } from "@opentui/core";
 import { useKeyboard, useTerminalDimensions } from "@opentui/react";
 import type { DialogConfig } from "./types";
 import { useKeyboardLayer } from "../keyboard-layer";
-//import { useTheme } from "../theme";
+import { useTheme } from "../theme";
 
 export type DialogContextValue = {
   open: (config: DialogConfig) => void;

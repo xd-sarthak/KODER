@@ -14,6 +14,7 @@ import type {ReactNode} from "react";
 import {useTerminalDimensions} from "@opentui/react"
 import type {ToastOptions,ToastVariant} from "./types";
 import {DEFAULT_TOAST_DURATION} from "./types";
+import { useTheme } from "../theme";
 
 export type ToastContextValue = {
     show: (options: ToastOptions) => void;
@@ -86,13 +87,14 @@ type ToastProps = {
 // It reads terminal dimensions to size itself properly and picks a border color based on variant
 function Toast({currentToast}: ToastProps) {
     const {width} = useTerminalDimensions();
+    const {colors} = useTheme();
 
     if(!currentToast) return null;
 
     const variantStyles: Record<ToastVariant, string> = {
-        success: "bg-green-500",
-        error: "bg-red-500",
-        info: "bg-blue-500"
+        success: colors.success,
+        error: colors.error,
+        info: colors.info
     };
 
     const borderColor = currentToast.variant ? variantStyles[currentToast.variant] : variantStyles.info;
@@ -109,7 +111,7 @@ function Toast({currentToast}: ToastProps) {
       paddingRight={2}
       paddingTop={1}
       paddingBottom={1}
-      backgroundColor="bgBlack"
+      backgroundColor={colors.surface}
       borderColor={borderColor}
       border={["left", "right"]}
     >
