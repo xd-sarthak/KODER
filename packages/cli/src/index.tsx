@@ -1,3 +1,10 @@
+/**
+ * Entry point
+ * This file boots up our Terminal User Interface (TUI).
+ * Instead of rendering to a web browser's DOM, it sets up OpenTUI
+ * to draw our beautiful UI components directly inside the terminal window.
+ */
+
 import { createCliRenderer } from "@opentui/core"; // the engnine for terminal rendering
 import { createRoot } from "@opentui/react";
 import { Header } from "./components/header";
@@ -7,6 +14,14 @@ import { KeyboardLayerProvider } from "./providers/keyboard-layer";
 
 // box - a basic container component, can be used for layout and styling
 // width and height can be set to "100%" to fill available space, or to a fixed number of columns/rows
+
+/**
+ * App is the root React component for our terminal app.
+ * It wraps everything in keyboard and notification (toast) providers,
+ * and sets up a centered dark-themed box layout containing the Header and InputBar.
+ * 
+ * @returns {JSX.Element} The core UI tree for our terminal workspace.
+ */
 function App() {
   return (
     <KeyboardLayerProvider>

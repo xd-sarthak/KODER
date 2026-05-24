@@ -1,7 +1,7 @@
 
 devprocess/
 
-
+AGENTS.md
 
 # dependencies (bun install)
 node_modules

@@ -1,3 +1,9 @@
+/**
+ * Command Menu State Hook 🧭
+ * This custom hook handles all the reactive states, key listening, and layout
+ * adjustments for showing, filtering, and navigating through our slash-command autocompletions.
+ */
+
 import { useRef, useState, useMemo, type RefObject } from 'react';
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
@@ -26,7 +32,12 @@ type UseCommandMenuReturn = {
     setSelectedIndex: (index: number) => void;
 }
 
-
+/**
+ * useCommandMenu encapsulates text state, selection index state, and custom scrolling behaviors.
+ * It registers key bindings via OpenTUI to let users navigate and trigger commands with Arrow keys.
+ * 
+ * @returns {UseCommandMenuReturn} React state variables and interaction handlers.
+ */
 export function useCommandMenu(): UseCommandMenuReturn {
     const [textValue, setTextValue] = useState(""); // the current text input value
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -34,12 +45,20 @@ export function useCommandMenu(): UseCommandMenuReturn {
     const scrollRef = useRef<ScrollBoxRenderable>(null);
     const { push, pop, isTopLayer } = useKeyboardLayer();
 
+    // Extract everything after "/" to use as the search filter query.
     const commandQuery = showCommandMenu && textValue.startsWith("/") ? textValue.slice(1) : "";
 
+    // Recalculates the list of matching commands whenever the query string changes.
     const filteredCommands = useMemo(() => {
         return filterCommands(commandQuery);
     }, [commandQuery]);
 
+    /**
+     * Resets the highlighted selection, scrolls back to top, and determines if the command menu
+     * needs to open or close based on whether the typed text starts with a "/".
+     * 
+     * @param {string} text - The current raw value of the input bar.
+     */
     const handleContentChange = (text: string) => {
         setTextValue(text);
         setSelectedIndex(0);
@@ -64,7 +83,12 @@ export function useCommandMenu(): UseCommandMenuReturn {
         }
     };
 
-    // resolve the command based on the current selected index
+    /**
+     * Confirms the selected command, automatically closing the menu and stripping focus.
+     * 
+     * @param {number} index - Index of the command being resolved.
+     * @returns {Command | undefined} The command metadata or undefined if out-of-bounds.
+     */
     const resolveCommand = (index: number): Command | undefined => {
         const command = filteredCommands[index];
         if (command) {

@@ -1,6 +1,17 @@
+/**
+ * Command Registry ⚙️
+ * This file serves as the main directory of all available slash-commands (like /new, /theme, /exit)
+ * and defines what each command does when selected. The context provided to each action allows them
+ * to open modal dialogs, trigger toast banners, or quit the CLI.
+ */
+
 import { ThemeDialogContent } from "../dialogs";
 import type { Command } from "./types";
 
+/**
+ * COMMANDS registers the full array of autocomplete choices.
+ * Each entry has a name, customer-facing description, command prefix trigger, and an action handler.
+ */
 export const COMMANDS: Command[] = [
   {
     name: "new",

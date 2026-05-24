@@ -1,3 +1,10 @@
+/**
+ * Command Menu Component 📋
+ * This file contains the visual presentation layer for the auto-complete dropdown menu.
+ * It filters registered commands dynamically based on typed text, renders them in a scrolling list,
+ * and highlights the currently selected option using nice contrast colors.
+ */
+
 import type {RefObject} from "react";
 import { TextAttributes, type ScrollBoxRenderable } from "@opentui/core";
 import { filterCommands } from "./filter-commands";
@@ -21,6 +28,17 @@ type CommandMenuProps = {
     onExecute: (index: number) => void;
 }
 
+/**
+ * CommandMenu renders the popup box list containing all command name and description matches.
+ * 
+ * @param {CommandMenuProps} props - Component properties.
+ * @param {string} props.query - Current text filter query.
+ * @param {number} props.selectedIndex - The index of the currently highlighted option.
+ * @param {RefObject<ScrollBoxRenderable | null>} props.scrollRef - React ref pointing to the scrolling container to trigger scrolling adjustments.
+ * @param {function} props.onSelect - Callback invoked when an item is hovered or focused.
+ * @param {function} props.onExecute - Callback invoked to execute the selected command.
+ * @returns {JSX.Element} The rendered scrollbox command dropdown menu or a "No commands found" placeholder.
+ */
 export function CommandMenu({ 
     query, 
     selectedIndex, 
