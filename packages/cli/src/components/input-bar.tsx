@@ -41,12 +41,27 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     handleContentChange(textarea.plainText);
   }, []);
 
+  const handleCommand = useCallback((command: Command | undefined) => {
+        const textarea = textareaRef.current;
+        if (!textarea || !command) return;
+
+        textarea.setText("");
+
+        if (command.action) {
+        command.action({
+            exit: () => renderer.destroy(),
+        });
+        } else {
+        textarea.insertText(command.value + " ");
+    }
+  }, [renderer]);
+
     const handleCommandExecute = useCallback(
     (index: number) => {
       const command = resolveCommand(index);
       handleCommand(command);
     },
-    [],
+    [resolveCommand, handleCommand],
   );
 
 
@@ -73,20 +88,6 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
         textarea.setText("");
     },[disabled, onSubmit]);
 
-    const handleCommand = useCallback((command: Command | undefined) => {
-        const textarea = textareaRef.current;
-        if (!textarea || !command) return;
-
-        textarea.setText("");
-
-        if (command.action) {
-        command.action({
-            exit: () => renderer.destroy(),
-        });
-        } else {
-        textarea.insertText(command.value + " ");
-    }
-  }, [renderer]);
 
     onSubmitRef.current = () => {
         if (disabled) return;
