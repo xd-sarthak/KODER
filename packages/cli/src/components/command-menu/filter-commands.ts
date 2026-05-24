@@ -1,19 +1,12 @@
-/**
- * Command Filtering Helper 🔍
- * A pure utility function to search through our command catalog.
- * It filters the command list depending on what the user types after the "/" symbol.
- */
+// This file filters the command list based on what you've typed after "/"
+// It's a simple helper — if you type "/ex", it narrows down to commands starting with "ex" (like "exit")
 
 import type { Command } from "./types";
 import { COMMANDS } from "./commands";
 
-/**
- * filterCommands takes a query string and returns commands starting with that query.
- * It is case-insensitive, so typing "/EXIT" or "/exit" matches the same exit command!
- * 
- * @param {string} query - The search text (excluding the leading slash).
- * @returns {Command[]} The matching commands array.
- */
+// Takes whatever you typed after "/" and finds matching commands
+// If you haven't typed anything yet, it returns all commands
+// The matching is case-insensitive so "/EXIT" and "/exit" both work
 export function filterCommands(query: string): Command[] {
     if (query.length === 0) {
         return COMMANDS;

@@ -1,9 +1,6 @@
-/**
- * Command Menu Component 📋
- * This file contains the visual presentation layer for the auto-complete dropdown menu.
- * It filters registered commands dynamically based on typed text, renders them in a scrolling list,
- * and highlights the currently selected option using nice contrast colors.
- */
+// This file renders the dropdown menu that appears when you type "/" in the input bar
+// It shows a filtered list of available commands (like /exit, /theme, /new) and
+// highlights whichever one you've got selected so you can pick it with Enter or click
 
 import type {RefObject} from "react";
 import { TextAttributes, type ScrollBoxRenderable } from "@opentui/core";
@@ -11,13 +8,12 @@ import { filterCommands } from "./filter-commands";
 import { COMMANDS } from "./commands";
 
 
+// Only show 8 commands at a time — if there are more, you scroll through them
 const MAX_VISIBLE_COMMANDS = 8;
 
-// gotta align all command names in a fixed width column
-// start at same horizontal position, and pad with spaces to the right
-// adjusts width to accommodate longest command name, up to a max width
-
-const COMMAND_COL_WIDTH = Math.max(...COMMANDS.map(cmd => cmd.name.length)) + 4; // add some padding
+// Figure out how wide the command name column should be
+// We look at the longest command name and add some padding so everything lines up nicely
+const COMMAND_COL_WIDTH = Math.max(...COMMANDS.map(cmd => cmd.name.length)) + 4;
 
 
 type CommandMenuProps = {
@@ -28,17 +24,9 @@ type CommandMenuProps = {
     onExecute: (index: number) => void;
 }
 
-/**
- * CommandMenu renders the popup box list containing all command name and description matches.
- * 
- * @param {CommandMenuProps} props - Component properties.
- * @param {string} props.query - Current text filter query.
- * @param {number} props.selectedIndex - The index of the currently highlighted option.
- * @param {RefObject<ScrollBoxRenderable | null>} props.scrollRef - React ref pointing to the scrolling container to trigger scrolling adjustments.
- * @param {function} props.onSelect - Callback invoked when an item is hovered or focused.
- * @param {function} props.onExecute - Callback invoked to execute the selected command.
- * @returns {JSX.Element} The rendered scrollbox command dropdown menu or a "No commands found" placeholder.
- */
+// Renders the actual command list popup
+// Takes the search query to filter commands and highlights the selected one
+// If nothing matches what you typed, shows "No commands found"
 export function CommandMenu({ 
     query, 
     selectedIndex, 

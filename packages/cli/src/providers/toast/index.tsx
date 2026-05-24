@@ -1,9 +1,7 @@
-/**
- * Toast Provider 🍞
- * This provider creates and displays temporary overlay alerts (toasts) in the CLI.
- * It exposes a context so any component down in the tree can pop up a notice
- * in the top right corner of the terminal window (e.g. "Signed out", "Loading...").
- */
+// This file handles toast notifications — those little popup messages that appear briefly
+// (like "Signed out" or "Loading sessions...") and then auto-dismiss after a few seconds
+// Architecture: uses React Context so any component can show a toast by calling toast.show()
+// The toast renders as an absolute-positioned box in the top-right corner of the terminal
 
 import {
     createContext,
@@ -23,11 +21,8 @@ export type ToastContextValue = {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-/**
- * Custom React hook to trigger new notifications from any sub-component.
- * 
- * @returns {ToastContextValue} Object containing the `show` method.
- */
+// Hook to trigger toasts from anywhere — just call toast.show({ message: "..." })
+// Throws if used outside of ToastProvider (safety net)
 export function useToast(): ToastContextValue {
     const value = useContext(ToastContext);
     if (!value) {
@@ -41,21 +36,13 @@ type ToastProviderProps = {
     children: ReactNode;
 };
 
-/**
- * ToastProvider coordinates notifications state, resets timers automatically,
- * and renders both child components and the floating alert container.
- * 
- * @param {ToastProviderProps} props - Component properties.
- * @param {ReactNode} props.children - Child components to render.
- * @returns {JSX.Element} The ToastContext.Provider along with the Toast element.
- */
+// The provider — tracks the current toast and manages its auto-dismiss timer
+// Only one toast shows at a time — showing a new one replaces the old one
 export function ToastProvider({children}: ToastProviderProps) {
     const [currentToast,setCurrentToast] = useState<ToastOptions | null>(null);
     const timeoutHandleRef = useRef<NodeJS.Timeout | null>(null);
 
-    /**
-     * Clears any active auto-dismiss timer to prevent closing the wrong alert.
-     */
+    // Cancel any existing auto-dismiss timer so we don't accidentally close the wrong toast
     const clearCurrentTimeout = useCallback(() => {
         if(timeoutHandleRef.current) {
             clearTimeout(timeoutHandleRef.current);
@@ -63,12 +50,8 @@ export function ToastProvider({children}: ToastProviderProps) {
         }
     },[]);
 
-    /**
-     * Triggers a new notification toast, automatically choosing defaults for
-     * variant styles and duration before resetting the auto-dismiss timer.
-     * 
-     * @param {ToastOptions} options - Toast message, variant ("success", "error", "info"), and duration.
-     */
+    // Show a new toast — sets defaults for variant and duration, then starts the dismiss timer
+    // .unref() on the timeout means it won't keep the Node.js process alive if the app is shutting down
     const show = useCallback((options: ToastOptions) => {
         const duration = options.duration ?? DEFAULT_TOAST_DURATION;
         clearCurrentTimeout();
@@ -99,14 +82,8 @@ type ToastProps = {
     currentToast: ToastOptions | null;
 };
 
-/**
- * Toast is the actual UI widget rendered at the top-right of the terminal.
- * It measures the terminal dimensions dynamically and wraps word elements safely.
- * 
- * @param {ToastProps} props - Component properties.
- * @param {ToastOptions | null} props.currentToast - Currently active notification details or null.
- * @returns {JSX.Element | null} The box rendering the notification text, or null.
- */
+// The actual toast UI — a small box positioned in the top-right corner
+// It reads terminal dimensions to size itself properly and picks a border color based on variant
 function Toast({currentToast}: ToastProps) {
     const {width} = useTerminalDimensions();
 

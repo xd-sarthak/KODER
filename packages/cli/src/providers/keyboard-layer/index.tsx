@@ -1,9 +1,9 @@
-/**
- * Keyboard Layer Provider ⌨️
- * In a Terminal UI, only one element should respond to keystrokes at a time.
- * This provider creates a "focus stack". When a new interactive component (like the command menu)
- * is opened, it's pushed to the top of the stack, capturing key events first!
- */
+// This file solves a tricky problem: in a terminal UI, only ONE thing should handle keyboard input at a time
+// For example, when a dialog is open, it should capture Escape — not the input bar behind it
+// Architecture: we use a "focus stack" — new UI layers (command menu, dialog) push onto the stack,
+// and only the top layer gets to respond to keyboard events. When it closes, the layer below takes over.
+// This is also where we handle Ctrl+C — it walks the stack top-down, giving each layer a chance
+// to handle the exit (e.g. clear text first), and only quits the app if nobody handles it
 
 import React, { 
   createContext, 
@@ -25,14 +25,8 @@ type KeyboardLayerContextValue = {
 
 const KeyboardLayerContext = createContext<KeyboardLayerContextValue | null>(null);
 
-/**
- * KeyboardLayerProvider wraps the React tree to establish the focused layer stack
- * and sets up a global keyboard handler (e.g. for Ctrl+C exit handling).
- * 
- * @param {object} props - React props.
- * @param {React.ReactNode} props.children - Child components to render under this provider.
- * @returns {JSX.Element} The context provider rendering child components.
- */
+// The provider — wraps the entire app and manages the keyboard focus stack
+// Starts with a "base" layer (the input bar) and lets other components push on top
 export function KeyboardLayerProvider({ children }: { children: React.ReactNode }) {
     const [stack, setStack] = useState<string[]>(["base"]);
     const stackRef = useRef(stack);
@@ -41,13 +35,8 @@ export function KeyboardLayerProvider({ children }: { children: React.ReactNode 
     const responders = useRef<Map<string, Responder>>(new Map());
     const renderer = useRenderer();
 
-    /**
-     * Pushes a new active layer onto the focus stack.
-     * If a custom responder callback is provided, it is registered for that layer.
-     * 
-     * @param {string} id - Unique identifier of the layer.
-     * @param {Responder} [responder] - Optional function to call for intercepting keys.
-     */
+    // Push a new layer onto the stack (e.g. "command" when command menu opens)
+    // Optionally register a responder function that handles Ctrl+C for this layer
     const push = useCallback((id: string, responder?: Responder) => {
         if (responder) {
             responders.current.set(id, responder);
@@ -62,22 +51,13 @@ export function KeyboardLayerProvider({ children }: { children: React.ReactNode 
         });
     }, []);
 
-    /**
-     * Removes a layer from the focus stack when that component is closed.
-     * 
-     * @param {string} id - Unique identifier of the layer to remove.
-     */
+    // Remove a layer when its component closes (e.g. command menu dismissed)
     const pop = useCallback((id: string) => {
         responders.current.delete(id);
         setStack((prev) => prev.filter((layer) => layer !== id));
     }, []);
 
-    /**
-     * Checks if a layer is currently at the top of the focus stack, meaning it has keyboard priority.
-     * 
-     * @param {string} id - The layer identifier to check.
-     * @returns {boolean} True if the layer is on top, otherwise false.
-     */
+    // Check if a layer is currently on top — only the top layer should respond to keys
     const isTopLayer = useCallback(
         (id: string) => {
             return stack.length === 0 || stack[stack.length - 1] === id;
@@ -85,12 +65,8 @@ export function KeyboardLayerProvider({ children }: { children: React.ReactNode 
         [stack],
     );
 
-    /**
-     * Registers or clears the key intercept handler for a specific layer.
-     * 
-     * @param {string} id - The layer identifier.
-     * @param {Responder | null} responder - The callback function to handle key actions, or null to clear.
-     */
+    // Register or clear a Ctrl+C handler for a specific layer
+    // The input bar uses this to clear text on first Ctrl+C instead of quitting
     const setResponder = useCallback((
         id: string,
         responder: Responder | null
@@ -103,7 +79,9 @@ export function KeyboardLayerProvider({ children }: { children: React.ReactNode 
     }, []);
 
 
-    // ctrl+c hadnler
+    // Global Ctrl+C handler — walks the stack from top to bottom
+    // Each layer's responder gets a chance to handle it (return true = handled)
+    // If nobody handles it, we kill the app
     useKeyboard((key) => {
         if (!key.ctrl || key.name !== "c") return;
 
@@ -130,11 +108,8 @@ export function KeyboardLayerProvider({ children }: { children: React.ReactNode 
 
 };
 
-/**
- * Custom hook providing easy access to the focus layer stack APIs.
- * 
- * @returns {KeyboardLayerContextValue} The stack management functions: push, pop, isTopLayer, and setResponder.
- */
+// Hook to access the keyboard layer stack from any component
+// Gives you push, pop, isTopLayer, and setResponder
 export function useKeyboardLayer() {
   const context = useContext(KeyboardLayerContext);
   if (!context) {

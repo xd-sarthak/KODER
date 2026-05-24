@@ -1,29 +1,21 @@
-/**
- * Command Menu Types 📋
- * Type interfaces mapping the exact shape of autocomplete commands and the runtime execution context
- * passed to their handlers (like notifications or app termination).
- */
+// This file defines the TypeScript types for the command menu system
+// It's where we describe what a "command" looks like and what tools a command gets when it runs
 
 import type { DialogContextValue } from "../../providers/dialogs";
 import type { ToastContextValue } from "../../providers/toast";
 
-/**
- * CommandContext provides the system actions and providers to a running command.
- * It lets a command trigger popup toasts or shut down the application cleanly.
- */
+// CommandContext is the bag of tools passed to every command's action function
+// It gives commands the ability to show toasts, open dialogs, or quit the app
 export type CommandContext = {
     exit: () => void;
     toast: ToastContextValue;
     dialog: DialogContextValue;
 }
 
-/**
- * Command represents a single executable command inside Koder's command menu.
- * - name: the shortcut string (e.g. "exit")
- * - description: a short description of what it does
- * - value: the text inserted if chosen
- * - action: an optional custom callback that runs when the command is confirmed
- */
+// Command is the shape of a single slash command
+// name = what you type (like "exit"), description = what shows in the menu
+// value = the text that gets inserted if there's no custom action
+// action = optional function that runs when you pick this command
 export type Command = {
     name: string;
     description: string;

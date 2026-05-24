@@ -1,9 +1,6 @@
-/**
- * InputBar Component 💬
- * This is the primary interactive area of the application where users type their questions
- * or command triggers (like "/"). It wires up the text editor block, coordinates key handlers,
- * and launches the auto-complete command menu.
- */
+// This is the main input area where you type your prompts or slash commands
+// It handles text input, keyboard shortcuts, and opens the command menu when you type "/"
+// Think of it as the "chat box" of the terminal agent
 
 import { CommandMenu } from "./command-menu";
 import { StatusBar } from "./status-bar";
@@ -22,10 +19,8 @@ type Props = {
   disabled?: boolean;
 }
 
-/**
- * TEXTAREA_KEY_BINDINGS defines the default shortcut rules for our input area.
- * Pressing Enter alone submits the text, while Shift+Enter inserts a new line.
- */
+// Keyboard shortcut config: Enter submits your message, Shift+Enter makes a new line
+// This is the same pattern you see in chat apps like Slack or Discord
 export const TEXTAREA_KEY_BINDINGS: KeyBinding[] = [
   { name: "return", action: "submit" },
   { name: "enter", action: "submit" },
@@ -33,14 +28,7 @@ export const TEXTAREA_KEY_BINDINGS: KeyBinding[] = [
   { name: "enter", shift: true, action: "newline" },
 ];
 
-/**
- * InputBar handles typing, keyboard shortcut capture, and command menu display.
- * 
- * @param {Props} props - Component properties.
- * @param {function} props.onSubmit - Callback function triggered when a text query is submitted.
- * @param {boolean} [props.disabled=false] - If true, disables user typing and command activations.
- * @returns {JSX.Element} The styled input area component with command list and status bar.
- */
+// The actual input bar component — takes an onSubmit callback and optional disabled flag
 export function InputBar({ onSubmit, disabled = false }: Props) {
   const textareaRef = useRef<TextareaRenderable>(null);
   const onSubmitRef = useRef<() => void>(() => { });
@@ -60,9 +48,8 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     setSelectedIndex,
   } = useCommandMenu();
 
-  /**
-   * Tracks text typing in real-time to decide if the user started writing a command (like "/").
-   */
+  // Every time you type something, check if the text starts with "/"
+  // If it does, the command menu will pop up to autocomplete your command
   const handleTextareaContentChange = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -70,11 +57,8 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     handleContentChange(textarea.plainText);
   }, []);
 
-  /**
-   * Runs the action associated with a chosen command, or inserts the command's shortcut text.
-   * 
-   * @param {Command | undefined} command - The command selected from the menu.
-   */
+  // When you pick a command from the menu, this runs its action (like opening a dialog)
+  // If the command doesn't have a custom action, it just inserts the command text into the input
   const handleCommand = useCallback((command: Command | undefined) => {
     const textarea = textareaRef.current;
     if (!textarea || !command) return;
@@ -92,11 +76,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     }
   }, [renderer, toast]);
 
-  /**
-   * Executes a command given its index in the filtered command list.
-   * 
-   * @param {number} index - Position of the command in the menu list.
-   */
+  // Looks up a command by its index in the filtered list and runs it
   const handleCommandExecute = useCallback(
     (index: number) => {
       const command = resolveCommand(index);
@@ -106,7 +86,8 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
   );
 
 
-  // Wire up textarea submit handler once so it always reads the latest state.
+  // Wire up the textarea's submit handler once on mount
+  // We use a ref so it always calls the latest version of our submit logic
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -116,9 +97,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     };
   }, [])
 
-  /**
-   * Triggers the onSubmit callback with the typed text, then clears the input area.
-   */
+  // Grabs the typed text, sends it to the parent via onSubmit, then clears the input
   const handleSubmit = useCallback(() => {
     if (disabled) return;
 
@@ -133,6 +112,9 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
   }, [disabled, onSubmit]);
 
 
+  // This decides what happens when you press Enter:
+  // If the command menu is open → execute the selected command
+  // Otherwise → submit the text as a normal message
   onSubmitRef.current = () => {
     if (disabled) return;
 
@@ -146,6 +128,9 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
   }
 
 
+  // Register this input bar as an escape responder on the "base" keyboard layer
+  // When you press Ctrl+C and there's text in the box, it clears the text first
+  // Only if the box is already empty does Ctrl+C actually quit the app
   useEffect(() => {
     setResponder("base", () => {
       if (disabled) return false;

@@ -1,3 +1,7 @@
+// This file handles modal dialogs — those popup boxes that overlay everything
+// It uses React Context so any component can open/close a dialog without prop drilling
+// Architecture: DialogProvider wraps the app, Dialog component renders the actual popup
+
 import { createContext, useContext, useState, useCallback } from "react";
 import type { ReactNode } from "react";
 import { TextAttributes, RGBA } from "@opentui/core";
@@ -13,6 +17,8 @@ export type DialogContextValue = {
 
 const DialogContext = createContext<DialogContextValue | undefined>(undefined);
 
+// Hook to access dialog open/close from anywhere in the component tree
+// Throws if you try to use it outside of a DialogProvider (safety check)
 export function useDialog(): DialogContextValue {
   const value = useContext(DialogContext);
   if (!value) {
@@ -25,6 +31,9 @@ type DialogProviderProps = {
   children: ReactNode;
 };
 
+// The provider component — manages which dialog is currently showing
+// When you call open(), it pushes a "dialog" keyboard layer so the dialog captures keys first
+// When you call close(), it pops that layer and clears the dialog
 export function DialogProvider({ children }: DialogProviderProps) {
   const [currentDialog, setCurrentDialog] = useState<DialogConfig | null>(null);
   const { push, pop } = useKeyboardLayer();
@@ -64,6 +73,9 @@ type DialogProps = {
   close: () => void;
 };
 
+// The actual dialog UI — a semi-transparent overlay with a centered box
+// Pressing Escape or clicking the backdrop closes it
+// The dialog box itself stops click propagation so clicking inside doesn't close it
 function Dialog({ currentDialog, close }: DialogProps) {
   const { isTopLayer } = useKeyboardLayer();
   const dimensions = useTerminalDimensions();

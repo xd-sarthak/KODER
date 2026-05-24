@@ -1,16 +1,11 @@
-/**
- * Status Bar Widget 
- * A small widget placed right below the input text area.
- * It displays diagnostic/configuration metadata such as the active AI model version.
- */
+// This file is the little info bar that sits below the text input
+// It shows metadata like which AI model you're currently using
+// Right now it's hardcoded to "opus-4.6" but will eventually be dynamic
 
 import { TextAttributes } from "@opentui/core";
 
-/**
- * StatusBar renders the horizontal tray showcasing Koder status/configuration details.
- * 
- * @returns {JSX.Element} The flex row box with metadata details.
- */
+// Renders a horizontal row: "Build › opus-4.6"
+// The dimmed "›" separator is just a visual divider between the label and value
 export function StatusBar() {
     return (
         <box flexDirection="row" gap={1}>

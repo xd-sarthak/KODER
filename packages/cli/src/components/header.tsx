@@ -1,14 +1,8 @@
-/**
- * Header Widget 🎨
- * This simple layout component renders a centered ASCII title banner ("KODER")
- * in the terminal at startup using OpenTUI's built-in block character fonts.
- */
+// This file renders the big "KODER" title you see at the top of the terminal
+// It uses an ASCII art font so it looks cool and retro — purely cosmetic, no logic here
 
-/**
- * Header renders a stylized ASCII art block text header.
- * 
- * @returns {JSX.Element} The centered ascii-font layout box.
- */
+// Draws the KODER logo in a centered box using the "grid" ASCII font style
+// The purple color (#A78BFA) matches the app's accent theme
 export function Header() {
   return (
     <box justifyContent="center" alignItems="center">
