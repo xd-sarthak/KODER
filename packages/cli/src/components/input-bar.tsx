@@ -57,7 +57,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     if (!textarea) return;
 
     handleContentChange(textarea.plainText);
-  }, []);
+  }, [handleContentChange]);
 
   // When you pick a command from the menu, this runs its action (like opening a dialog)
   // If the command doesn't have a custom action, it just inserts the command text into the input
@@ -76,7 +76,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     } else {
       textarea.insertText(command.value + " ");
     }
-  }, [renderer, toast]);
+  }, [dialog,renderer, toast]);
 
   // Looks up a command by its index in the filtered list and runs it
   const handleCommandExecute = useCallback(
