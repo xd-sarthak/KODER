@@ -4,50 +4,30 @@
 
 import { createCliRenderer } from "@opentui/core"; // the engine for terminal rendering
 import { createRoot } from "@opentui/react";
-import { Header } from "./components/header";
-import { InputBar } from "./components/input-bar";
-import { ToastProvider } from "./providers/toast";
-import { KeyboardLayerProvider } from "./providers/keyboard-layer";
-import { DialogProvider } from "./providers/dialogs";
-import { ThemeProvider } from "./providers/theme";
-import { useTheme } from "./providers/theme";
+import {createMemoryRouter, RouterProvider} from "react-router";
+import { RootLayout } from "./layouts/root-layout";
+import { Home } from "./screens/home";
+import { NewSession } from "./screens/new-session";
+import { Session } from "./screens/session";
 
-function ThemedRoot() {
-  const { colors } = useTheme();
+const router = createMemoryRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {index: true,element: <Home/>},
+      {path: "sessions/new",element: <NewSession/>},
+      {path: "sessions/:id",element: <Session />}
+    ]
+  }
+]);
 
-  return (
-    <box
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor={colors.background}
-      width="100%"
-      height="100%"
-      gap={2}
-    >
-      <Header />
-      <box width="100%" maxWidth={100} paddingX={2}>
-        <InputBar onSubmit={() => { }} />
-      </box>
-    </box>
-  )
-}
 
 // This is the root component — everything else lives inside it
 // Architecture: we wrap the app in providers (keyboard, dialog, toast) so any child component
 // can trigger notifications, dialogs, or handle keyboard focus without prop drilling
 function App() {
-  return (
-    <ThemeProvider>
-      <KeyboardLayerProvider>
-        <DialogProvider>
-          <ToastProvider>
-            <ThemedRoot />
-          </ToastProvider>
-        </DialogProvider>
-      </KeyboardLayerProvider>
-    </ThemeProvider>
-  );
-
+  return <RouterProvider router={router} />
 }
 
 // Create the renderer at 60fps and mount the app — this is like ReactDOM.render() but for terminals
