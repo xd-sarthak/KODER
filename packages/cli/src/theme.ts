@@ -1,3 +1,9 @@
+// This file is the visual theme station! It defines all the cool color palettes 
+// (like Dracula, Nord, or Catppuccin) that users can switch between in the app.
+// It also lists all the specific parts of the UI that get styled under each theme.
+
+// This type describes all the colors that a theme MUST provide, such as colors for
+// background, success messages, planning modes, and focused text.
 export type ThemeColors = {
   primary: string;
   planMode: string;
@@ -13,11 +19,14 @@ export type ThemeColors = {
   dimSeparator: string;
 };
 
+// A theme is just a combination of a user-friendly name and its set of colors.
 export type Theme = {
   name: string;
   colors: ThemeColors;
 };
 
+// This is our giant registry of all built-in themes. Any theme defined here
+// automatically shows up as an option in the color themes dialog!
 export const THEMES: Theme[] = [
   {
     name: "Nightfox",
@@ -565,4 +574,6 @@ export const THEMES: Theme[] = [
   },
 ];
 
+// This is our fallback theme if the user hasn't chosen one or if something goes wrong.
+// We default to the gorgeous "Nightfox" theme.
 export const DEFAULT_THEME = THEMES.find((t) => t.name === "Nightfox")!;

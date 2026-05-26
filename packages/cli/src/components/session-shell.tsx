@@ -1,3 +1,7 @@
+// This file is the main layout shell for a chat/coding session!
+// It sets up the scrollable chat history area, the input bar where you type,
+// and the spinner/status information at the bottom of the screen.
+
 import { TextAttributes } from "@opentui/core";
 import type { ReactNode } from "react";
 import { InputBar } from "./input-bar";
@@ -10,6 +14,9 @@ type Props = {
   loading?: boolean;
 };
 
+// This is the session layout component. It wraps the chat content in a nice
+// scrollable box, slots the input bar at the bottom, and shows a loading spinner
+// when the AI is cooking up a response.
 export function SessionShell({
   children,
   onSubmit,
@@ -44,7 +51,7 @@ export function SessionShell({
         <box flexDirection="row" alignItems="center" gap={2}>
           {loading ? <Spinner /> : null}
         </box>
-
+ 
         <box flexDirection="row" gap={1} flexShrink={0} marginLeft="auto">
           <text>tab</text>
           <text attributes={TextAttributes.DIM}>agents</text>

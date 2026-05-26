@@ -1,3 +1,6 @@
+// This file displays error messages in the chat feed!
+// If something goes wrong (like a lost connection or API failure), this component shows the error clearly.
+
 import { TextAttributes } from "@opentui/core";
 import { useTheme } from "../../providers/theme";
 
@@ -5,6 +8,8 @@ type Props = {
   message: string;
 };
 
+// This component displays an error block in the chat.
+// It accepts the error message text and renders it with a warning border.
 export function ErrorMessage({ message }: Props) {
   const { colors } = useTheme();
 

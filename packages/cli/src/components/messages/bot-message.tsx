@@ -1,4 +1,7 @@
 
+// This file renders responses coming from the AI agent!
+// It takes care of layout, word wrapping, and displays which AI model generated the text.
+
 import { useTheme } from "../../providers/theme";
 
 type Props = {
@@ -6,6 +9,8 @@ type Props = {
   model: string;
 };
 
+// This component displays the AI bot's reply in the chat feed.
+// It accepts the text content and the model name, then draws a styled message box.
 export function BotMessage({ content, model }: Props) {
   const { colors } = useTheme();
 

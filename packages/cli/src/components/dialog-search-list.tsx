@@ -1,3 +1,7 @@
+// This file is a super reusable search list that pops up inside dialog boxes!
+// Think of it like a search bar combined with a list below it. As you type, the list
+// filters down automatically. You can navigate it using the arrow keys and pick items with Enter.
+
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { TextAttributes, type InputRenderable, type ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
@@ -17,6 +21,9 @@ type DialogSearchListProps<T> = {
     emptyText?: string;
 };
 
+// This is the component itself. It takes a list of generic items, a function to filter them,
+// a function to render each item, and callbacks for when items are highlighted or chosen.
+// It returns a search box and a list that updates in real time.
 export function DialogSearchList<T>({
     items,
     onSelect,
@@ -35,6 +42,8 @@ export function DialogSearchList<T>({
     const { isTopLayer } = useKeyboardLayer();
     const { colors } = useTheme();
 
+    // This runs whenever you type in the search box. It updates the search text,
+    // resets our selected item back to the very top, and scrolls the list back up.
     const handleContentChange = useCallback(() => {
         const text = inputRef.current?.value ?? "";
         setSearchValue(text);
@@ -51,6 +60,8 @@ export function DialogSearchList<T>({
 
     const visibleHeight = Math.min(filtered.length, MAX_VISIBLE_ITEMS);
 
+    // This hook listens to terminal keyboard events! If this dialog is on the top layer,
+    // pressing Enter will select the highlighted item, and arrow keys will scroll up or down.
     useKeyboard((key) => {
         if (!isTopLayer("dialog")) return;
 
